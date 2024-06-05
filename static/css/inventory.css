@@ -1,0 +1,92 @@
+html{
+    background-color: #f5f5f7;
+    font-family: "Roboto", sans-serif;
+}
+
+body{
+    display:grid;
+    justify-items: center;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    "r1"
+    "r2"
+    "r3"
+    "r4"
+    "r5"
+    "r6";
+}
+
+h1{
+    grid-area: r1;
+
+}
+
+#pagedisc{
+    grid-area: r2;
+}
+
+#title{
+    padding-top: 20px;
+    grid-area: r3;
+    display: flex;
+    flex-direction: row;
+}
+
+#pencil{
+    margin-left: 10px;
+    align-self: center;
+}
+
+#businessCat{
+    grid-area: r4;
+    padding-bottom: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+label{
+    font-size: larger;
+    font-weight: bold;
+}
+
+#table{
+    grid-area: r6;
+    border: solid black;
+    border-collapse: collapse; /* Collapse border spacing */
+    width: 100%; /* Make table width 100% */
+}
+
+thead {
+    border-bottom: 2px solid #000; /* Apply border to bottom of thead */
+}
+
+th, td {
+    border: 1px solid #000; /* Apply border to all sides of th and td */
+    padding: 8px; /* Add padding for cell content */
+}
+
+#newText{
+    margin-bottom: 20px;
+}
+
+td{
+    text-align: center;
+}
+
+#rowEditSave{
+    width: 100%;
+    grid-area: r5;
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 20px;
+    justify-content: right;
+}
+
+#icons{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

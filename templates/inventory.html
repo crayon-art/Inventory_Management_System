@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/inventory.css')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <title>Inventory List</title>
+</head>
+<body>
+    <h1>Full Inventory List</h1>
+    <p id="pagedesc">Here you can view your inventory, add, edit and delete items.</p>
+    <div id="title">
+        <h2 id="titletext">Table Title</h2>
+        <button id="pencil">✏️</button>
+    </div>
+
+    <div id="businessCat">
+            <label for="textbox">Choose a business Type:</label>
+            <select id="buschoices" name="choices">
+                <option value="Agriculture">Agriculture</option>
+                <option value="Automotive">Automotive</option>
+                <option value="Books and Stationery">Books and Stationery</option>
+                <option value="Clothing and Apparel">Clothing and Apparel</option>
+                <option value="Construction">Construction</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Food and Beverages">Food and Beverages</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Health and Beauty">Health and Beauty</option>
+                <option value="Home and Kitchen">Home and Kitchen</option>
+                <option value="Hospitality">Hospitality</option>
+                <option value="Pharmaceuticals">Pharmaceuticals</option>
+                <option value="Sports and Outdoors">Sports and Outdoors</option>
+                <option value="Technology">Technology</option>
+                <option value="Toys and Games">Toys and Games</option>
+            </select>
+    </div>
+
+    <div id="rowEditSave">
+        <button id="saverow">💾 Save</button>
+    </div>
+
+    <table id="table">
+        <thead id="categories">
+            <tr>
+                <th>Product Id</th>
+                <th>Product</th>
+                <th>Manufacturer</th>
+                <th>Supplier</th>
+                <th>Category</th>
+                <th>Units</th>
+                <th>Cost Price ($)</th>
+                <th>Markup (%)</th>
+                <th>Sale Price ($)</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr id="tableRow1">
+                <td id="c1" class="rowNum">1</td>
+                <td id="c2">
+                    <input type="text" id="textbox" name="r1" placeholder="Enter product name...">
+                </td>
+                <td id="c3">
+                    <input type="text" id="textbox" name="r1" placeholder="Enter brand name...">
+                </td>
+                <td id="c4">
+                    <input type="text" id="textbox" name="r1" placeholder="Enter supplier name...">
+                </td>
+                <td id="c5">
+                    <select id="choices" name="r1c">
+                        <option value="option1">Seeds and Plants</option>
+                        <option value="option2">Fertilizers</option>
+                        <option value="option3">Farming Equipment</option>
+                    </select>
+                </td>
+                <td id="c6">
+                    <input type="number" id="textbox" name="r1" min="1" placeholder="Enter # of units...">
+                </td>
+                <td id="c7">
+                    <input type="number" id = "cp1" name="r1" min="1" placeholder="Enter cost price...">
+                </td>
+                <td id="c8">
+                    <input type="number" id="mark1" name="r1" min="1" placeholder="Enter markup %...">
+                </td>
+                <td id="c9">
+                    <input type="number" id="sp1" name="r1" min="1" placeholder="Enter sale price...">
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+    <script src="{{ url_for ('static', filename='scripts/inventory.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+html{
+    background-color: #f5f5f7;
+    font-family: "Roboto", sans-serif;
+}
+
+body{
+    display:grid;
+    justify-items: center;
+    justify-content: center;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    "r1"
+    "r2"
+    "r3"
+    "r4";
+}
+
+h1{
+    grid-area: r1;
+
+}
+
+#pagedisc{
+    grid-area: r2;
+}
+
+h3{
+    grid-area: r3;
+}
+
+#tempimg{
+    grid-area: r4;
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    height: 400px;
+}
