@@ -1,7 +1,30 @@
+//function to store table title in local storage
+let storeTitle = (myTitle)=>{
+    localStorage.setItem("Title", myTitle);
+};
+
+//function to restore title
+let restoreTitle = ()=>{
+    var storedTitle = localStorage.getItem("Title");
+    if(storedTitle){
+        return storedTitle;
+    }
+    else {
+        return "Table Title";
+    }
+};
+
+
 //add event listener on page load
 window.addEventListener("DOMContentLoaded", async()=>{
 
     try{
+
+    //restore saved Table Title if Present
+        const tempTitle = document.getElementById("titletext");
+        const storedText = restoreTitle();
+        tempTitle.innerText = storedText;
+
         const editbtn = document.getElementById("pencil");
         //Add an evet listener to change the title of the table
         editbtn.addEventListener("click", async()=>{
@@ -29,6 +52,7 @@ window.addEventListener("DOMContentLoaded", async()=>{
                 const textInfo = newText.value;
                 if (textInfo!==""){
                     tempTitle.innerText = textInfo;
+                    storeTitle(textInfo);
                 }
                     title.appendChild(tempTitle);
                     title.appendChild(editbtn);
