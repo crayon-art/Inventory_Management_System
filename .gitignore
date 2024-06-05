@@ -8,6 +8,8 @@ node_modules/
 .env.production.local
 .env.local
 
+#venv files
+venv/
 
 # ignore ALL .log files
 *.log
