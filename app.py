@@ -271,11 +271,16 @@ def edit(id):
         product.units = units
         product.price = salePrice
         db.session.commit()
-
         logging.debug("Product updated successfully")
 
-        #update the products_suppliers table
+        #delete product/supplier entry in products_suppliers table for id
+        product_supplier = Product_Suppliers.query.filter_by(product_id=id).all()
+        for ps in product_supplier:
+            db.session.delete(ps)
+        db.session.commit()
+        logging.debug("Product suppliers deleted successfully")
 
+        #update the products_suppliers table
         existing_product_supplier = Product_Suppliers.query.filter_by(product_id=product.id, supplier_id=supplier_id).first()
         if existing_product_supplier:
             existing_product_supplier.price = costPrice
