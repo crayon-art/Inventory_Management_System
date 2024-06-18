@@ -374,7 +374,6 @@ def edit(id):
         db.session.commit()
         logging.debug("Product updated successfully")
 
-<<<<<<< HEAD
 
         #delete product/supplier entry in products_suppliers table for id
         product_supplier = Product_Suppliers.query.filter_by(product_id=id).all()
@@ -383,15 +382,6 @@ def edit(id):
         db.session.commit()
         logging.debug("Product suppliers deleted successfully")
 
-=======
-        #delete product/supplier entry in products_suppliers table for id
-        product_supplier = Product_Suppliers.query.filter_by(product_id=id).all()
-        for ps in product_supplier:
-            db.session.delete(ps)
-        db.session.commit()
-        logging.debug("Product suppliers deleted successfully")
-
->>>>>>> 6d12c92fae8a7c5e11879abbfd33b12ba94b0932
         #update the products_suppliers table
         existing_product_supplier = Product_Suppliers.query.filter_by(product_id=product.id, supplier_id=supplier_id).first()
         if existing_product_supplier:
