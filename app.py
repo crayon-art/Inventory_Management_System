@@ -39,6 +39,19 @@ def inventory():
     if request.args.get('format') == 'json':
 
         try:
+            # Convert data to a format that can be easily sent to the frontend, for example, JSON
+            inventory_data = []
+            filt = False
+            logging.debug(f"ARGUEMENTS: {len(request.args)}")
+
+            #check if the filter is enabled or not
+            if len(request.args)>1:
+                args = request.args.to_dict()
+                args.pop('format', None)
+                filter_field, filter_value = next(iter(args.items()))
+                filt = True
+                logging.debug(f"Filter field: {filter_field}, Filter value: {filter_value}")
+
             # Load data from the database
             products = Products.query.all()
             manufacturers = Manufacturers.query.all()
@@ -46,8 +59,6 @@ def inventory():
             suppliers = Suppliers.query.all()
             product_suppliers = Product_Suppliers.query.all()
 
-            # Convert data to a format that can be easily sent to the frontend, for example, JSON
-            inventory_data = []
 
             # Loop through products and match manufacturer, category, and supplier
             for product in products:
@@ -72,20 +83,76 @@ def inventory():
                 logging.debug(f"Product ID: {product.id}, Name: {product.name}, Manufacturer: {manufacturer_name}, Category: {category_name}, Supplier: {supplier_name}")
 
                 # Append product data with manufacturer, category, and supplier names to inventory_data
-                inventory_data.append({
-                    "id":product.id,
-                    "name": product.name,
-                    "manufacturer": manufacturer_name,
-                    "category": category_name,
-                    "supplier": supplier_name,
-                    "units": product.units,
-                    "costPrice": supplier_price,
-                    "salePrice": product.price
-                })
+
+                if filt == True:
+
+                    if filter_field == "Product":
+                        if product.name==filter_value:
+                            inventory_data.append({
+                                "id":product.id,
+                                "name": product.name,
+                                "manufacturer": manufacturer_name,
+                                "category": category_name,
+                                "supplier": supplier_name,
+                                "units": product.units,
+                                "costPrice": supplier_price,
+                                "salePrice": product.price
+                            })
+
+                    if filter_field == "Manufacturer":
+                        if manufacturer_name==filter_value:
+                            inventory_data.append({
+                                "id":product.id,
+                                "name": product.name,
+                                "manufacturer": manufacturer_name,
+                                "category": category_name,
+                                "supplier": supplier_name,
+                                "units": product.units,
+                                "costPrice": supplier_price,
+                                "salePrice": product.price
+                            })
+
+                    if filter_field == "Supplier":
+                        if supplier_name==filter_value:
+                            inventory_data.append({
+                                "id":product.id,
+                                "name": product.name,
+                                "manufacturer": manufacturer_name,
+                                "category": category_name,
+                                "supplier": supplier_name,
+                                "units": product.units,
+                                "costPrice": supplier_price,
+                                "salePrice": product.price
+                            })
+
+                    if filter_field == "Category":
+                        if category_name==filter_value:
+                            inventory_data.append({
+                                "id":product.id,
+                                "name": product.name,
+                                "manufacturer": manufacturer_name,
+                                "category": category_name,
+                                "supplier": supplier_name,
+                                "units": product.units,
+                                "costPrice": supplier_price,
+                                "salePrice": product.price
+                            })
+
+                else:
+                    inventory_data.append({
+                        "id":product.id,
+                        "name": product.name,
+                        "manufacturer": manufacturer_name,
+                        "category": category_name,
+                        "supplier": supplier_name,
+                        "units": product.units,
+                        "costPrice": supplier_price,
+                        "salePrice": product.price
+                    })
 
             # Sort inventory_data by product ID
             inventory_data = sorted(inventory_data, key=lambda x: x['id'])
-
+            logging.debug(f"DATA: {inventory_data}")
             return jsonify(inventory_data), 200
         except Exception as e:
                 return jsonify({"error": str(e)}), 500
@@ -94,6 +161,46 @@ def inventory():
         # Render the HTML page
         return render_template(html_file_path)
 
+
+@app.route("/inventory/<filter>", methods =['GET'])
+def filter_list(filter):
+    data = []
+
+    try:
+        # Load data from the database
+        products = Products.query.all()
+        manufacturers = Manufacturers.query.all()
+        categories = Categories.query.all()
+        suppliers = Suppliers.query.all()
+        product_supplers = Product_Suppliers.query.all()
+
+        for p in products:
+            if filter == "Product":
+                if p.name not in data:
+                    data.append(p.name)
+
+            elif filter == "Manufacturer":
+                for m in manufacturers:
+                    if m.id==p.manufacturer_id:
+                        if m.name not in data:
+                            data.append(m.name)
+
+            elif filter == "Category":
+                for c in categories:
+                    if c.id==p.category_id:
+                        if c.name not in data:
+                            data.append(c.name)
+
+            elif filter == "Supplier":
+                for ps in product_supplers:
+                    if p.id==ps.product_id:
+                        for s in suppliers:
+                            if s.id == ps.supplier_id:
+                                if s.name not in data:
+                                    data.append(s.name)
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/inventory", methods=['POST'])
 def submit():
@@ -121,12 +228,6 @@ def submit():
         logging.debug(f"units: {units}")
         logging.debug(f"CP: {costPrice}")
         logging.debug(f"SP: {salePrice}")
-
-
-        # existing_product = db.session.get(Products, id)
-        # if existing_product:
-        #     logging.debug(f"Product exists: {existing_product.id}")
-        #     return jsonify({"error": "Product with this name already exists"}), 400
 
         #update manufacturer table and extract manufacturer id
         existing_manufacturer = Manufacturers.query.filter_by(name=manufacturer_name).first()

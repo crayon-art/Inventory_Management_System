@@ -37,7 +37,21 @@
     </div>
 
     <div id="rowEditSave">
-        <button id="saverow">💾 Save</button>
+        <div id="filter">
+            <div id="fbox1">
+                <label for="textbox">Filter:</label>
+                <select id="filterchoices" name="fchoices">
+                    <option value="None">None</option>
+                    <option value="Product">Product</option>
+                    <option value="Manufacturer">Manufacturer</option>
+                    <option value="Supplier">Supplier</option>
+                    <option value="Category">Category</option>
+                </select>
+            </div>
+            <div id="fbox2">
+            </div>
+        </div>
+        <button id="saverow">💾 Add new product</button>
     </div>
 
     <table id="table">

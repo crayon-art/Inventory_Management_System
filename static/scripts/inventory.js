@@ -196,6 +196,54 @@ window.addEventListener("DOMContentLoaded", async()=>{
         }
     });
 
+    //add event listener to generate filter fields
+            const filterbox = document.getElementById("filterchoices");
+            filterbox.addEventListener("change", async()=>{
+                const filtername = document.getElementById("fbox2");
+
+                 if(filterbox.value==="None"){
+                    filtername.innerHTML="";
+                    // Reload the page with the updated info
+                    location.reload();
+                 }
+                 else{
+                    filtername.innerHTML=
+                    `<label for="textbox">${filterbox.value} name:</label>
+                    <select id="filternames" name="fchoices">
+                    </select>`;
+
+
+                 const fchoices = document.getElementById("filternames");
+                 let newchoice;
+
+                //grab data corresponding to selected category from db
+                const res = await fetch(`/inventory/${filterbox.value}`);
+                let data = await res.json();
+
+                    for(let element of data){
+                        newchoice = document.createElement("option");
+                        newchoice.value = element;
+                        newchoice.innerText= element;
+                        fchoices.appendChild(newchoice);
+                    }
+                    //filter inventory list according to selected category name
+                    fchoices.addEventListener("click", async()=>{
+                        const filterField = filterbox.value;
+                        const filterValue = fchoices.value;
+
+                        console.log(`${filterField}${filterValue}`);
+                        const res = await fetch(`/inventory?format=json&${filterField}=${filterValue}`);
+                        let data = await res.json();
+                        console.log(data);
+                        // // Reload the page with the updated info
+                        createRows(data);
+                    });
+
+                }
+            });
+
+
+
     //addEventListener function for when the price, markup and sale price is entered
 
     const addEventListnerCalc = (currentRow)=>{
@@ -249,11 +297,9 @@ window.addEventListener("DOMContentLoaded", async()=>{
     const res = await fetch("/inventory?format=json");
     let data = await res.json();
 
+let createRows = (data)=>{
     const tbody = document.getElementById("tableBody");
     tbody.innerHTML = "";
-
-    console.log(data);
-
     for (let i=0; i<=data.length; i++){
         const newRow = document.createElement("tr");
         newRow.id=`tableRow${i+1}`;
@@ -356,9 +402,10 @@ window.addEventListener("DOMContentLoaded", async()=>{
                         "Content-Type" : "application/json"
                     }
                  })
+                 // Reload the page with the updated info
+                location.reload();
             }
-            // Reload the page with the updated info
-            location.reload();
+
          })
         }
 
@@ -367,13 +414,13 @@ window.addEventListener("DOMContentLoaded", async()=>{
             newRow.innerHTML=`
             <td id="c1" class="rowNum" name="r${i+1}"></td>
             <td id="c2">
-                <input type="text" id="textbox" name="r${i+1}" placeholder="Enter product name...">
+                <input type="text" id="textbox" class="lastrow" name="r${i+1}" placeholder="Enter product name... "required>
             </td>
             <td id="c3">
-                <input type="text" id="textbox" name="r${i+1}" placeholder="Enter brand name...">
+                <input type="text" id="textbox" class="lastrow" name="r${i+1}" placeholder="Enter brand name..."required>
             </td>
             <td id="c4">
-                <input type="text" id="textbox" name="r${i+1}" placeholder="Enter brand name...">
+                <input type="text" id="textbox" class="lastrow" name="r${i+1}" placeholder="Enter supplier name..."required>
             </td>
             <td id="c5">
                 <select id="choices" name="r${i+1}c">
@@ -383,48 +430,61 @@ window.addEventListener("DOMContentLoaded", async()=>{
                 </select>
             </td>
             <td id="c6">
-                <input type="number" id="textbox" name="r${i+1}" min="1" placeholder="Enter # of units...">
+                <input type="number" id="textbox" class="lastrow" name="r${i+1}" min="1" placeholder="Enter # of units..."required>
             </td>
             <td id="c7">
-                <input type="number" id = "cp${i+1}" name="r${i+1}" min="1" placeholder="Enter cost price...">
+                <input type="number" id = "cp${i+1}" class="lastrow" name="r${i+1}" min="1" placeholder="Enter cost price..."required>
             </td>
             <td id="c8">
-                <input type="number" id="mark${i+1}" name="r${i+1}" min="1" placeholder="Enter markup %...">
+                <input type="number" id="mark${i+1}" class="lastrow" name="r${i+1}" min="1" placeholder="Enter markup %..."required>
             </td>
             <td id="c9">
-                <input type="number" id="sp${i+1}" name="r${i+1}" min="1" placeholder="Enter sale price...">
+                <input type="number" id="sp${i+1}" class="lastrow" name="r${i+1}" min="1" placeholder="Enter sale price..."required>
             </td>`;
         tbody.appendChild(newRow);
         addEventListnerCalc(i+1);
         }
     }
+}
 
+createRows(data);
     //listener event for when the save button is pressed
     const save = document.getElementById("saverow");
     save.addEventListener("click", async()=>{
-
+        const lastrow = document.getElementsByClassName("lastrow");
         const currentRow = document.getElementsByClassName("rowNum").length;
-        //back-end databse and server code
-        await fetch("/inventory", {
+    for (let item of lastrow){
+        if(item.value===""){
+            item.focus();
+            break;
+        }
 
-            method: "POST",
-            headers : {
-                "Content-Type" : "application/json"
-            },
-            body: JSON.stringify({
-                product_name: ((document.getElementsByName(`r${currentRow}`)[1]).value).toLowerCase(),
-                manufacturer: ((document.getElementsByName(`r${currentRow}`)[2]).value).toLowerCase(),
-                supplier: ((document.getElementsByName(`r${currentRow}`)[3]).value).toLowerCase(),
-                category: document.getElementsByName(`r${currentRow}c`)[0].value,
-                units: Number((document.getElementsByName(`r${currentRow}`)[4]).value),
-                costPrice: Number((document.getElementsByName(`r${currentRow}`)[5]).value),
-                markup: Number((document.getElementsByName(`r${currentRow}`)[6]).value),
-                salePrice: Number((document.getElementsByName(`r${currentRow}`)[7]).value)
-            })
-        });
+        else if(item===lastrow[lastrow.length-1]){
+            //back-end databse and server code
+                await fetch("/inventory", {
 
-        // Reload the page with the updated info
-        location.reload();
+                    method: "POST",
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body: JSON.stringify({
+                        product_name: ((document.getElementsByName(`r${currentRow}`)[1]).value).toLowerCase(),
+                        manufacturer: ((document.getElementsByName(`r${currentRow}`)[2]).value).toLowerCase(),
+                        supplier: ((document.getElementsByName(`r${currentRow}`)[3]).value).toLowerCase(),
+                        category: document.getElementsByName(`r${currentRow}c`)[0].value,
+                        units: Number((document.getElementsByName(`r${currentRow}`)[4]).value),
+                        costPrice: Number((document.getElementsByName(`r${currentRow}`)[5]).value),
+                        markup: Number((document.getElementsByName(`r${currentRow}`)[6]).value),
+                        salePrice: Number((document.getElementsByName(`r${currentRow}`)[7]).value)
+                    })
+                });
+
+                // Reload the page with the updated info
+                location.reload();
+
+            }
+    }
+
     });
 
     }catch(err){
