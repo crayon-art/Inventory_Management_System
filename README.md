@@ -12,3 +12,7 @@ Picture of Inventory Table
 
 Picture of Inventory Table Filter System
 ![Inventory Management Filter](https://github.com/crayon-art/Inventory_Management_System/assets/142947608/5841b373-52a5-495b-939d-c22eb2fa9dca)
+
+Picture of Database Schema
+![schema_Inventory_Management_Database](https://github.com/crayon-art/Inventory_Management_System/assets/142947608/f6938399-5ade-4da0-b15b-c2f34dcc4e17)
+
