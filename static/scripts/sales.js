@@ -108,7 +108,7 @@ window.addEventListener("DOMContentLoaded", async()=>{
             const deleteRow = document.getElementById(`d${i+1}`);
             deleteRow.addEventListener("click", async()=>{
 
-            const confirmation = confirm (`Do you really want to delete Invoice ${id}?`)
+            const confirmation = confirm (`Do you really want to delete receipt ${id}?`);
 
                 if(confirmation){
                     //update database with the changes
