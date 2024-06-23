@@ -9,11 +9,32 @@
 </head>
 <body>
     <h1>Business Sales</h1>
-    <p id="pagedesc">Here you can track item sales and generate sales receipts.</p>
-    <h3>Under Construction</h3>
-    <div id="tempimg">
-        <img id="i1" src="{{ url_for('static', filename='media/comingsoon.jpg') }}" alt="a picture of a person taking inventory">
+    <p id="pagedesc">Here you can track item sales and generate sales invoices.</p>
+    <div id="title">
+        <h2 id="titletext">Table Title</h2>
+        <button id="pencil">✏️</button>
     </div>
-    <script src=""></script>
+
+    <div id="newsale">
+        <div id="filter">
+        </div>
+        <button id="newsalebtn">💲 Create New Sales Invoice</button>
+    </div>
+
+    <table id="table">
+        <thead id="categories">
+            <tr>
+                <th>Invoice id</th>
+                <th>Date</th>
+                <th>Sale Total ($)</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+
+        </tbody>
+    </table>
+    <div id="home"><button>🏠</button></div>
+    <script src="{{ url_for ('static', filename='scripts/sales.js') }}"></script>
 </body>
 </html>

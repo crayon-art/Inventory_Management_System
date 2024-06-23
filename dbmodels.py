@@ -1,4 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
+from sqlalchemy.dialects.postgresql import ARRAY
 
 # Create the SQLAlchemy db instance
 db = SQLAlchemy()
@@ -33,10 +35,19 @@ class Products (db.Model):
     units = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-#db model for postgre products_suppliers table
+#db model for postgreSQL products_suppliers table
 class Product_Suppliers(db.Model):
     __tablename__ = 'products_suppliers'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     product_id = db.Column(db.Integer, nullable=False)
     supplier_id = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+#db model for postgreSQL sales_invoice
+class Sales_Invoice(db.Model):
+    __tablename__ = 'sales_invoice'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date = db.Column(db.DateTime, server_default=func.timezone('+04', func.current_timestamp()))
+    products = db.Column(ARRAY(db.String), nullable=True)
+    units = db.Column(ARRAY(db.Integer), nullable = True)
     price = db.Column(db.Float, nullable=False)

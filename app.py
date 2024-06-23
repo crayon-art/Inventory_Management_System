@@ -3,11 +3,12 @@ import logging
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from dbmodels import db, Manufacturers, Suppliers, Products, Product_Suppliers, Categories
+from dbmodels import db, Manufacturers, Suppliers, Products, Product_Suppliers, Categories,Sales_Invoice
 from sqlalchemy import create_engine
 from datetime import datetime
 from sqlalchemy.exc import OperationalError
 from sqlalchemy import text
+from sqlalchemy import asc
 
 # # Load variables from .env file into environment
 load_dotenv()
@@ -169,6 +170,7 @@ def filter_list(filter):
     try:
         # Load data from the database
         products = Products.query.all()
+        products_ao = Products.query.order_by(asc(Products.name)).all()
         manufacturers = Manufacturers.query.all()
         categories = Categories.query.all()
         suppliers = Suppliers.query.all()
@@ -198,6 +200,27 @@ def filter_list(filter):
                             if s.id == ps.supplier_id:
                                 if s.name not in data:
                                     data.append(s.name)
+
+        for p in products_ao:
+            if filter == "Products":
+                    data.append([p.id, p.name, p.units, p.price])
+
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/inventory/<int:product_id>/units", methods =['GET'])
+def get_units(product_id):
+    data = []
+
+    try:
+        # Load data from the database
+        products = Products.query.all()
+
+        for p in products:
+            if p.id == product_id:
+                data.append(p.units)
+
         return jsonify(data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -434,9 +457,169 @@ def delete(id):
 
 @app.route("/sales", methods=['GET'])
 def sales():
-        # Render the Sales page
-        html_file_path = os.path.join('sales.html')
+    # Render the Sales page
+    html_file_path = os.path.join('sales.html')
+
+    # Check if the request wants JSON data
+    if request.args.get('format') == 'json':
+
+        try:
+            # Convert data to a format that can be easily sent to the frontend, for example, JSON
+            sales_data = []
+
+            #Load data from the database
+            sales = Sales_Invoice.query.all()
+            logging.debug(f"sales_data: {sales}")
+
+            for s in sales:
+                # Convert to ISO 8601 string
+                date = s.date.isoformat()
+                sales_data.append({
+                    "id":s.id,
+                    "date":date,
+                    "price": s.price
+                })
+
+            # Sort inventory_data by product ID
+            sales_data = sorted(sales_data, key=lambda x: x['id'])
+            logging.debug(f"DATA: {sales_data}")
+            return jsonify(sales_data), 200
+
+        except Exception as e:
+                return jsonify({"error": str(e)}), 500
+
+    else:
+        #render the html page
         return render_template(html_file_path)
+
+@app.route("/sales/newsale", methods=['GET'])
+def newsale():
+        # Render the New Sale page
+        html_file_path = os.path.join('newsale.html')
+        return render_template(html_file_path)
+
+@app.route("/sales/<int:id>", methods=['GET'])
+def template(id):
+
+    if request.args.get('format') == 'json':
+        #variables to store data
+        data=[]
+        price = []
+        try:
+            # Retrieve the invoice based on id
+            sales_invoice = db.session.get(Sales_Invoice, id)
+            if sales_invoice is None:
+                return jsonify({"error": "Product not found"}), 404
+
+            logging.debug(f"Invoice found: {sales_invoice}")
+
+            #Retrieve product price info from Products table
+            products = sales_invoice.products
+            for i in range(len(products)):
+                product_result = Products.query.filter_by(name=products[i]).first()
+                price.append((product_result.price)*(sales_invoice.units[i]))
+
+            # Convert to ISO 8601 string
+                date = sales_invoice.date.isoformat()
+
+            data.append({
+                "id" : sales_invoice.id,
+                "date": date,
+                "products" : sales_invoice.products,
+                "units" : sales_invoice.units,
+                "price" : price,
+                "totalPrice" : sales_invoice.price
+            })
+
+            logging.debug(f"DATA: {data}")
+            return jsonify(data), 200
+
+        except Exception as e:
+                return jsonify({"error": str(e)}), 500
+    else:
+        # Render the details page
+        html_file_path = os.path.join('details.html')
+        return render_template(html_file_path)
+
+
+@app.route("/sales/<int:id>", methods=['DELETE'])
+def delete_invoice(id):
+
+    try:
+        # Retrieve the invoice based on id
+        sales_invoice = db.session.get(Sales_Invoice, id)
+        if sales_invoice is None:
+            return jsonify({"error": "Product not found"}), 404
+
+        logging.debug(f"Invoice found: {sales_invoice}")
+
+        #Delete invoice at id
+        db.session.delete(sales_invoice)
+        db.session.commit()
+        logging.debug("Invoice successfully deleted")
+        return jsonify({"message": "Invoice deleted successfully"}), 200
+
+    except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+@app.route("/sales/newsale", methods=['POST'])
+def submit_invoice():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No input data provided"}), 400
+
+    #populate the database with the information of the new item
+    try:
+        # Extract data from the request
+        productsArr = data.get('products')
+        products_Id = data.get('productsId')
+        unitsArr = data.get('units')
+        salePrice = data.get('price')
+
+        logging.debug(f"Received data: {data}")
+        logging.debug(f"product: {productsArr}")
+        logging.debug(f"product_id: {products_Id}")
+        logging.debug(f"units: {unitsArr}")
+        logging.debug(f"total price: {salePrice}")
+
+        #update product count
+        all_products = Products.query.all()
+        # for pid in products_Id:
+        for i in range(len(products_Id)):
+            for pall in all_products:
+                if products_Id[i] == pall.id:
+                        logging.debug(f"units: {pall.units} - {unitsArr[i]}")
+                        pall.units=pall.units-unitsArr[i]
+                        db.session.commit()
+                        break
+
+        # Create a new invoice
+        new_invoice = Sales_Invoice(
+            products=productsArr,
+            units=unitsArr,
+            price=salePrice
+        )
+
+        db.session.add(new_invoice)
+        db.session.commit()
+        logging.debug(f"New Product: {new_invoice}")
+
+        return jsonify({"message": "Product created successfully"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/price/<product>", methods=['GET'])
+def prod_price(product):
+    #create array to store extracted data to be sent back to frontend
+    price = 0.00
+    try:
+        #query databse for info on the product
+        product_result = Products.query.filter_by(name=product).first()
+        price = product_result.price
+        return jsonify(price), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     # Set debug mode to True

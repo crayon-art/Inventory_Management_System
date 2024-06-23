@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/details.css')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <title id="title"></title>
+</head>
+<body>
+    <h1 id= "h1"></h1>
+    <div id = "banner">
+        <h2 id="invoiceId"></h2>
+        <h2 id="date"></h2>
+        <h2 id="time"></h2>
+    </div>
+    <table id="table">
+        <thead id="categories">
+            <tr>
+                <th></th>
+                <th>Product</th>
+                <th>Units</th>
+                <th>Sale Price ($)</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+    <div id = footer>
+        <div id="back"><button>🔙</button></div>
+        <div id="print"><button>💾</button></div>
+    </div>
+    <script src="{{ url_for ('static', filename='scripts/details.js') }}"></script>
+</body>
+</html>

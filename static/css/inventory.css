@@ -4,6 +4,7 @@ html{
 }
 
 body{
+    /* width: fit-content; */
     display:grid;
     justify-items: center;
     grid-template-columns: 1fr;
@@ -14,7 +15,8 @@ body{
     "r3"
     "r4"
     "r5"
-    "r6";
+    "r6"
+    "r7";
 }
 
 h1{
@@ -111,4 +113,25 @@ th{
 
 .lastrow:focus{
     background-color: rgb(214, 241, 252);
+}
+
+button{
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+#home button {
+    grid-area: r7;
+    font-size: 30px; /* Increase the size of the emoji */
+    padding: 20px;
+    border: none; /* Rounded corners */
+    background-color: transparent;
+}
+
+@media screen and (max-width:1500px){
+    #table{
+        width: 50%
+    }
+    body{
+        width:fit-content;
+    }
 }

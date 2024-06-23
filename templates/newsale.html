@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/newsales.css')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <title>Sales Invoice</title>
+</head>
+<body>
+    <h1>Create Invoice</h1>
+    <p id="pagedesc">Please enter your sales invoice product information.</p>
+    <div id="savebtn"><button id="saverow">💾 Save invoice</button></div>
+    <table id="table">
+        <thead id="categories">
+            <tr>
+                <th></th>
+                <th>Product</th>
+                <th>Units</th>
+                <th>Sale Price ($)</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+    <div id=addRows>
+        <div id="add"><button>➕ Add row</button></div>
+        <div id="delete"><button>❌ Delete row</button></div>
+    </div>
+    <div id=back><button>🔙</button></div>
+    <script src="{{ url_for ('static', filename='scripts/newsale.js') }}"></script>
+</body>
+</html>

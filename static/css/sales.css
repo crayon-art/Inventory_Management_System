@@ -13,7 +13,9 @@ body{
     "r1"
     "r2"
     "r3"
-    "r4";
+    "r4"
+    "r5"
+    "r6";
 }
 
 h1{
@@ -25,14 +27,83 @@ h1{
     grid-area: r2;
 }
 
-h3{
+#title{
     grid-area: r3;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: row;
 }
 
-#tempimg{
+#pencil{
+    margin-left: 10px;
+    align-self: center;
+}
+
+#newsale{
     grid-area: r4;
+    padding-bottom: 20px;
+    padding-top: 20px;
     display: flex;
-    flex-direction: column;
-    width: 800px;
-    height: 400px;
+    width: 50%;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#table{
+    grid-area: r5;
+    border: solid black;
+    border-collapse: collapse; /* Collapse border spacing */
+    width: 50%; /* Make table width 50% */
+}
+
+thead {
+    border-bottom: 2px solid #000; /* Apply border to bottom of thead */
+}
+
+th {
+    border: 1px solid #000; /* Apply border to all sides of th*/
+    padding: 8px; /* Add padding for cell content */
+    background-color: rgb(214, 241, 252);
+}
+
+td {
+    border: 1px solid #000;
+    text-align: center;
+    padding: 5px;
+}
+
+#c4div{
+    display: flex;
+    flex-direction: row;
+}
+
+button{
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+#home button {
+    grid-area: r6;
+    font-size: 30px; /* Increase the size of the emoji */
+    padding: 20px;
+    border: none; /* Rounded corners */
+    background-color: transparent;
+}
+
+[name="price"]{
+    text-align: right;
+    display: block;
+}
+
+@media screen and (max-width:932px){
+    #newsale{
+
+        width: 100%;
+    }
+
+
+    #table{
+        width: 100%; /* Make table width 50% */
+    }
+
+
 }

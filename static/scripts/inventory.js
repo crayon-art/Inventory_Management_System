@@ -406,7 +406,7 @@ let createRows = (data)=>{
                 location.reload();
             }
 
-         })
+         });
         }
 
         //add the latest blank row
@@ -487,11 +487,13 @@ createRows(data);
 
     });
 
+    //add home button functionality
+    const home = document.getElementById("home");
+    home.addEventListener("click", ()=>{
+        window.location.href = "/";
+    });
+
     }catch(err){
         console.error("Something went wrong...");
     }
-
-
-
-
 });
