@@ -8,7 +8,7 @@ window.addEventListener("DOMContentLoaded", async()=>{
         const res = await fetch(`/sales/${id}?format=json`);
         const data = await res.json();
         const lastRow = ((data[0].products).length);
-        console.log(data);
+
         //extract the relevant information from the date string
         const fullDate = data[0].date;
         const date1 = fullDate.slice(0,10);
@@ -16,19 +16,19 @@ window.addEventListener("DOMContentLoaded", async()=>{
 
         //update page variables
         const title = document.getElementById("title");
-        title.innerText = `Sales Invoice ${id}`;
+        title.innerText = `Sales Receipt ${id}`;
 
         const h1 = document.getElementById("h1");
-        h1.innerText = `Sales Invoice`;
+        h1.innerText = `Sales Receipt`;
 
         const invoiceId = document.getElementById("invoiceId");
-        invoiceId.innerText = `Invoice # ${id}`;
+        invoiceId.innerText = `Receipt # ${id}`;
 
         const date = document.getElementById("date");
-        date.innerText = `Date: ${date1}`;
+        date.innerText = `Receipt Date: ${date1}`;
 
         const time = document.getElementById("time");
-        time.innerText =`Time: ${date2}`;
+        time.innerText =`Time of Sale: ${date2}`;
 
         const tableBody = document.getElementById("tableBody");
 
@@ -49,6 +49,7 @@ window.addEventListener("DOMContentLoaded", async()=>{
         for (let i=0; i<lastRow; i++){
 
             //let price be displayed with 2 dp
+            const unitPrice = neatNum(data[0].unitPrice[i]);
             const price = neatNum(data[0].price[i]);
 
             const newRow = document.createElement("tr");
@@ -57,6 +58,7 @@ window.addEventListener("DOMContentLoaded", async()=>{
                 <td id="c1"><text name="number">${i+1}</text></td>
                 <td id="c2"><text name="product">${data[0].products[i]}</text></td>
                 <td id="c3"><text name="units">${data[0].units[i]}</text></td>
+                <td id="c3"><text name="unitPrice">${unitPrice}</text></td>
                 <td id="c4"><text name="price">${price}</text></td>
                 </td>`;
             tableBody.appendChild(newRow);
@@ -67,8 +69,9 @@ window.addEventListener("DOMContentLoaded", async()=>{
                 lRow.innerHTML = `
                     <td></td>
                     <td></td>
+                    <td></td>
                     <td><text id="total">Total Amount:</text></td>
-                    <td><text id="sum">${totalPrice}</text></td>
+                    <td><text id="sum">$ ${totalPrice}</text></td>
                 `;
             tableBody.appendChild(lRow);
 

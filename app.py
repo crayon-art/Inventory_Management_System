@@ -504,6 +504,7 @@ def template(id):
     if request.args.get('format') == 'json':
         #variables to store data
         data=[]
+        unit_price =[]
         price = []
         try:
             # Retrieve the invoice based on id
@@ -518,6 +519,7 @@ def template(id):
             for i in range(len(products)):
                 product_result = Products.query.filter_by(name=products[i]).first()
                 price.append((product_result.price)*(sales_invoice.units[i]))
+                unit_price.append(product_result.price)
 
             # Convert to ISO 8601 string
                 date = sales_invoice.date.isoformat()
@@ -528,7 +530,8 @@ def template(id):
                 "products" : sales_invoice.products,
                 "units" : sales_invoice.units,
                 "price" : price,
-                "totalPrice" : sales_invoice.price
+                "totalPrice" : sales_invoice.price,
+                "unitPrice" : unit_price
             })
 
             logging.debug(f"DATA: {data}")
