@@ -30,7 +30,7 @@ window.addEventListener("DOMContentLoaded", async () => {
                         </div>
                     </td>
                     <td id="r${n + 1}c3">
-                        <input type="number" id="nu${n + 1}" name="r${n + 1}" class="fixed-width" min="0" max="${data[0][2]}" value="1">
+                        <input type="number" id="nu${n + 1}" name="r${n + 1}" class="fixed-width" min="0" max="${data[0][2]}" value="0">
                     </td>
                     <td id="c4">
                         <input type="text" id="sp${n + 1}" name="sumEntry" class="fixed-width" placeholder="sale price..." disabled="true">
@@ -80,7 +80,7 @@ window.addEventListener("DOMContentLoaded", async () => {
                     const unitsNum = document.getElementById(`r${i + 1}c3`);
                     unitsNum.innerHTML = `
                         <input type="number" id="nu${i + 1}" name="r${i + 1}"
-                        min="1" max="${maxUnits}" value="1" class="fixed-width">
+                        min="1" max="${maxUnits}" value="0" class="fixed-width">
                     `;
 
                     const units = document.getElementById(`nu${i + 1}`);
@@ -91,7 +91,7 @@ window.addEventListener("DOMContentLoaded", async () => {
                             units.value = 0;
                         }
                         const spElement = document.getElementById(`sp${i + 1}`);
-                        spElement.value = sPrice * Number(units.value);
+                        spElement.value = (sPrice * Number(units.value)).toFixed(2);
                         updateTotal();
                     });
                 });
@@ -188,34 +188,26 @@ window.addEventListener("DOMContentLoaded", async () => {
                                 }
                             }
                         }
+
+                        // update sales_invoice table in database
+                        await fetch(`newsale`, {
+
+                            method: "POST",
+                            headers : {
+                                "Content-Type" : "application/json"
+                            },
+                            body: JSON.stringify({
+                                products: productsArr,
+                                units: unitsArr,
+                                price: totalPrice,
+                                unitPrice:unitPrice,
+                                productsId:productsIdArr
+                            })
+                        });
+                        window.location.href="/sales";
                     };
                 };
-
-                console.log(`Products: ${productsArr}`);
-                console.log(`Units ${unitsArr}`);
-                console.log(`Total Price ${totalPrice}`);
-                console.log(`Unit Price ${unitPrice}`);
-                console.log(`Id ${productsIdArr}`);
-
-
-                // update sales_invoice table in database
-                await fetch(`newsale`, {
-
-                    method: "POST",
-                    headers : {
-                        "Content-Type" : "application/json"
-                    },
-                    body: JSON.stringify({
-                        products: productsArr,
-                        units: unitsArr,
-                        price: totalPrice,
-                        unitPrice:unitPrice,
-                        productsId:productsIdArr
-                    })
-                });
-                 window.location.href="/sales";
         });
-
 
     } catch (err) {
         console.error(`Error: ${err.stack}`);

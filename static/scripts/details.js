@@ -7,7 +7,57 @@ window.addEventListener("DOMContentLoaded", async()=>{
 
         const res = await fetch(`/sales/${id}?format=json`);
         const data = await res.json();
-        console.log(data);
+
+        //function to handle decipal points after number
+        let neatNum = (number)=>{
+            if(Number.isInteger(number)){
+                return( (`${number}.00`));
+            }
+            else {
+                let strNum = number.toString();
+                let arrNum = strNum.split(".");
+
+                if (arrNum[1].length===1){
+                    arrNum[1] = arrNum[1]+"0";
+                    return(arrNum.join("."));
+                }
+
+                else if(arrNum[1].length===2){
+                    return(strNum);
+                }
+
+                else if(arrNum[1].length>2){
+                    let newNum = [];
+                    newNum.push(arrNum[0]);
+
+                    if(arrNum[1][0]==="9" && arrNum[1][1]==="9"){
+                        newNum = [`${arrNum[0]}`, "99"]
+                        return (newNum.join("."));
+                    }
+
+                    else {
+                        if (Number(arrNum[1][2])>5){
+                            if(arrNum[1][1]==="9"){
+                                newNum = [`${newNum[0]}`,`${Number(arrNum[1][0])+1}0`];
+                                return (newNum.join("."));
+                            }
+                            else{
+                                newNum = [`${newNum[0]}`,`${arrNum[1][0]}${Number(arrNum[1][1])+1}`];
+                                return (newNum.join("."));
+                            }
+                        } else {
+                                newNum = [`${newNum[0]}`,`${arrNum[1][0]}${arrNum[1][1]}`];
+                                return (newNum.join("."));
+
+                        }
+                    }
+                }
+            }
+        }
+
+        console.log(neatNum(36.567));
+
+
         if (data.error){
 
             const confirmation = confirm (`Receipt not found. Go back to sales?`);
@@ -43,24 +93,13 @@ window.addEventListener("DOMContentLoaded", async()=>{
 
             const tableBody = document.getElementById("tableBody");
 
-            let neatNum = (number)=>{
-                if(Number.isInteger(number)){
-                    return( (`${number}.00`));
-                }
-                else {
-                    strNum = number.toString();
-                    arrNum = strNum.split(".");
-                    if (arrNum[1].length===1){
-                        arrNum[1] = arrNum[1]+"0";
-                        return(arrNum.join("."));
-                    }
-                }
-            }
-
             for (let i=0; i<lastRow; i++){
 
                 //let price be displayed with 2 dp
                 const unitPrice = neatNum(data[0].unitPrice[i]);
+
+                console.log(data[0].price[i]);
+
                 const price = neatNum(data[0].price[i]);
 
                 const newRow = document.createElement("tr");

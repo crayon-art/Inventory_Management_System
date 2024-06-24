@@ -50,5 +50,5 @@ class Sales_Receipts(db.Model):
     date = db.Column(db.DateTime, server_default=func.timezone('+04', func.current_timestamp()))
     products = db.Column(ARRAY(db.String), nullable=True)
     units = db.Column(ARRAY(db.Integer), nullable = True)
-    unit_price = db.Column(ARRAY(db.Integer), nullable = True)
+    unit_price = db.Column(ARRAY(db.Float), nullable = True)
     price = db.Column(db.Float, nullable=False)
