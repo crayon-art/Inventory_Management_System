@@ -44,10 +44,11 @@ class Product_Suppliers(db.Model):
     price = db.Column(db.Float, nullable=False)
 
 #db model for postgreSQL sales_invoice
-class Sales_Invoice(db.Model):
-    __tablename__ = 'sales_invoice'
+class Sales_Receipts(db.Model):
+    __tablename__ = 'sales_receipts'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     date = db.Column(db.DateTime, server_default=func.timezone('+04', func.current_timestamp()))
     products = db.Column(ARRAY(db.String), nullable=True)
     units = db.Column(ARRAY(db.Integer), nullable = True)
+    unit_price = db.Column(ARRAY(db.Integer), nullable = True)
     price = db.Column(db.Float, nullable=False)

@@ -30,7 +30,7 @@ window.addEventListener("DOMContentLoaded", async () => {
                         </div>
                     </td>
                     <td id="r${n + 1}c3">
-                        <input type="number" id="nu${n + 1}" name="r${n + 1}" class="fixed-width" min="1" max="${data[0][2]}" value="1">
+                        <input type="number" id="nu${n + 1}" name="r${n + 1}" class="fixed-width" min="0" max="${data[0][2]}" value="1">
                     </td>
                     <td id="c4">
                         <input type="text" id="sp${n + 1}" name="sumEntry" class="fixed-width" placeholder="sale price..." disabled="true">
@@ -88,7 +88,7 @@ window.addEventListener("DOMContentLoaded", async () => {
                         if (Number(units.value) > maxUnits) {
                             units.value = maxUnits;
                         }else if (Number(units.value) < 1){
-                            units.value = 1;
+                            units.value = 0;
                         }
                         const spElement = document.getElementById(`sp${i + 1}`);
                         spElement.value = sPrice * Number(units.value);
@@ -152,6 +152,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             const productsArr = [];
             const productsIdArr=[];
             const unitsArr = [];
+            const unitPrice = [];
             const totalPrice = Number(document.getElementById("sum").innerText);
 
                 const rowNum = document.getElementsByName("rownum");
@@ -159,6 +160,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
                     //ensure total price column has a value
                     const sum = document.getElementById(`sp${n+1}`);
+
 
                     if(sum.value===""){
                         const check = document.getElementById(`nu${n+1}`);
@@ -168,12 +170,14 @@ window.addEventListener("DOMContentLoaded", async () => {
                     else if(sum.value!==""&&n===rowNum.length-1){
                         let prodVal;
                         let unitVal;
-                        const rowNum = document.getElementsByName("rownum").length;
-                        for (let i=0; i<rowNum; i++){
+
+                        for (let i =0; i<rowNum.length; i++){
+                            const sum = document.getElementById(`sp${i+1}`);
                             prodVal = document.getElementById(`choice${i+1}`).value;
                             unitVal = Number(document.getElementById(`nu${i + 1}`).value);
                             productsArr.push(prodVal);
                             unitsArr.push(unitVal);
+                            unitPrice.push((sum.value/unitVal));
                         }
 
                         //get product id for product
@@ -184,24 +188,32 @@ window.addEventListener("DOMContentLoaded", async () => {
                                 }
                             }
                         }
-
-                        // update sales_invoice table in database
-                        await fetch(`newsale`, {
-
-                            method: "POST",
-                            headers : {
-                                "Content-Type" : "application/json"
-                            },
-                            body: JSON.stringify({
-                                products: productsArr,
-                                units: unitsArr,
-                                price: totalPrice,
-                                productsId:productsIdArr
-                            })
-                        });
-                        window.location.href="/sales";
                     };
                 };
+
+                console.log(`Products: ${productsArr}`);
+                console.log(`Units ${unitsArr}`);
+                console.log(`Total Price ${totalPrice}`);
+                console.log(`Unit Price ${unitPrice}`);
+                console.log(`Id ${productsIdArr}`);
+
+
+                // update sales_invoice table in database
+                await fetch(`newsale`, {
+
+                    method: "POST",
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body: JSON.stringify({
+                        products: productsArr,
+                        units: unitsArr,
+                        price: totalPrice,
+                        unitPrice:unitPrice,
+                        productsId:productsIdArr
+                    })
+                });
+                 window.location.href="/sales";
         });
 
 

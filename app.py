@@ -3,7 +3,7 @@ import logging
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from dbmodels import db, Manufacturers, Suppliers, Products, Product_Suppliers, Categories,Sales_Invoice
+from dbmodels import db, Manufacturers, Suppliers, Products, Product_Suppliers, Categories,Sales_Receipts
 from sqlalchemy import create_engine
 from datetime import datetime
 from sqlalchemy.exc import OperationalError
@@ -468,7 +468,7 @@ def sales():
             sales_data = []
 
             #Load data from the database
-            sales = Sales_Invoice.query.all()
+            sales = Sales_Receipts.query.all()
             logging.debug(f"sales_data: {sales}")
 
             for s in sales:
@@ -504,34 +504,31 @@ def template(id):
     if request.args.get('format') == 'json':
         #variables to store data
         data=[]
-        unit_price =[]
         price = []
         try:
-            # Retrieve the invoice based on id
-            sales_invoice = db.session.get(Sales_Invoice, id)
-            if sales_invoice is None:
+            # Retrieve the receipt based on id
+            sales_receipt = db.session.get(Sales_Receipts, id)
+            if sales_receipt is None:
                 return jsonify({"error": "Product not found"}), 404
 
-            logging.debug(f"Invoice found: {sales_invoice}")
+            logging.debug(f"Receipt found: {sales_receipt}")
 
-            #Retrieve product price info from Products table
-            products = sales_invoice.products
+            #Retrieve product price info (# of units * unit price)
+            products = sales_receipt.products
             for i in range(len(products)):
-                product_result = Products.query.filter_by(name=products[i]).first()
-                price.append((product_result.price)*(sales_invoice.units[i]))
-                unit_price.append(product_result.price)
+                price.append((sales_receipt.unit_price[i])*(sales_receipt.units[i]))
 
             # Convert to ISO 8601 string
-                date = sales_invoice.date.isoformat()
+            date = sales_receipt.date.isoformat()
 
             data.append({
-                "id" : sales_invoice.id,
+                "id" : sales_receipt.id,
                 "date": date,
-                "products" : sales_invoice.products,
-                "units" : sales_invoice.units,
+                "products" : sales_receipt.products,
+                "units" : sales_receipt.units,
                 "price" : price,
-                "totalPrice" : sales_invoice.price,
-                "unitPrice" : unit_price
+                "totalPrice" : sales_receipt.price,
+                "unitPrice" : sales_receipt.unit_price
             })
 
             logging.debug(f"DATA: {data}")
@@ -546,27 +543,27 @@ def template(id):
 
 
 @app.route("/sales/<int:id>", methods=['DELETE'])
-def delete_invoice(id):
+def delete_receipt(id):
 
     try:
-        # Retrieve the invoice based on id
-        sales_invoice = db.session.get(Sales_Invoice, id)
-        if sales_invoice is None:
+        # Retrieve the receipt based on id
+        sales_receipt = db.session.get(Sales_Receipts, id)
+        if sales_receipt is None:
             return jsonify({"error": "Product not found"}), 404
 
-        logging.debug(f"Invoice found: {sales_invoice}")
+        logging.debug(f"Receipt found: {sales_receipt}")
 
-        #Delete invoice at id
-        db.session.delete(sales_invoice)
+        #Delete receipt at id
+        db.session.delete(sales_receipt)
         db.session.commit()
-        logging.debug("Invoice successfully deleted")
-        return jsonify({"message": "Invoice deleted successfully"}), 200
+        logging.debug("Receipt successfully deleted")
+        return jsonify({"message": "Receipt deleted successfully"}), 200
 
     except Exception as e:
             return jsonify({"error": str(e)}), 500
 
 @app.route("/sales/newsale", methods=['POST'])
-def submit_invoice():
+def submit_receipt():
     data = request.get_json()
 
     if not data:
@@ -578,13 +575,15 @@ def submit_invoice():
         productsArr = data.get('products')
         products_Id = data.get('productsId')
         unitsArr = data.get('units')
-        salePrice = data.get('price')
+        sale_price = data.get('price')
+        unit_priceArr = data.get("unitPrice")
 
         logging.debug(f"Received data: {data}")
         logging.debug(f"product: {productsArr}")
         logging.debug(f"product_id: {products_Id}")
         logging.debug(f"units: {unitsArr}")
-        logging.debug(f"total price: {salePrice}")
+        logging.debug(f"unit price: {unit_priceArr}")
+        logging.debug(f"total price: {sale_price}")
 
         #update product count
         all_products = Products.query.all()
@@ -597,16 +596,17 @@ def submit_invoice():
                         db.session.commit()
                         break
 
-        # Create a new invoice
-        new_invoice = Sales_Invoice(
+        # Create a new receipt
+        new_receipt = Sales_Receipts(
             products=productsArr,
             units=unitsArr,
-            price=salePrice
+            unit_price = unit_priceArr,
+            price=sale_price
         )
 
-        db.session.add(new_invoice)
+        db.session.add(new_receipt)
         db.session.commit()
-        logging.debug(f"New Product: {new_invoice}")
+        logging.debug(f"New Product: {new_receipt}")
 
         return jsonify({"message": "Product created successfully"}), 201
     except Exception as e:

@@ -83,7 +83,7 @@ window.addEventListener("DOMContentLoaded", async()=>{
 
         for (let i=0; i<data.length; i++){
 
-            //convert data to appropraie form
+            //convert data to appropriate form
             const  id = data[i].id;
             const  price = (data[i].price).toFixed(2);
             const date = formatDate(data[i].date);
