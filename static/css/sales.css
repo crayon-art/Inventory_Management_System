@@ -105,5 +105,19 @@ button{
         width: 100%; /* Make table width 50% */
     }
 
+    text{
+        font-size: 12px;
+    }
 
+    h2{
+        font-size: 15px;
+    }
+
+    h1{
+        font-size:25px;
+    }
+
+    p{
+        font-size: 12px;
+    }
 }

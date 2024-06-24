@@ -129,7 +129,7 @@ button{
 
 @media screen and (max-width:1500px){
     #table{
-        width: 50%
+        width: fit-content
     }
     body{
         width:fit-content;
