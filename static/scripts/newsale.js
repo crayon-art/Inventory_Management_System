@@ -11,7 +11,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             if (!x.has(element[1])) {
                 x.add(element[1]);
             } else {
-                element[1] = `${element[1]} (2)`;
+                element[1] = `${element[1]} (${element[0]})`;
             }
         }
 
